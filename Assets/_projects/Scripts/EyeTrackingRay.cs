@@ -27,7 +27,7 @@ public class EyeTrackingRay : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
         SetupRay();
     }
-
+    
     void SetupRay()
     {
         lineRenderer.useWorldSpace = false;

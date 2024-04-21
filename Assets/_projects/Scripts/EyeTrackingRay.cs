@@ -1,11 +1,11 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
+
 public class EyeTrackingRay : MonoBehaviour
 {
     [SerializeField]
-    private float rayDistance = 1.0f;
+    private float rayDistance = 10.0f;
     [SerializeField]
     private float rayWidth = 0.01f;
     [SerializeField]
@@ -13,68 +13,57 @@ public class EyeTrackingRay : MonoBehaviour
 
     [SerializeField]
     private Color rayColorDefaultState = Color.yellow;
-
     [SerializeField]
     private Color rayColorHoverState = Color.red;
 
     private LineRenderer lineRenderer;
+    private EyeInteractable currentInteractable;
 
-    private List<EyeInteractable> eyeInteractables = new List<EyeInteractable>();
-
-    // Start is called before the first frame update
     void Start()
     {
         lineRenderer = GetComponent<LineRenderer>();
         SetupRay();
     }
-    
+
     void SetupRay()
     {
-        lineRenderer.useWorldSpace = false;
-        lineRenderer.positionCount = 2;
         lineRenderer.startWidth = rayWidth;
         lineRenderer.endWidth = rayWidth;
         lineRenderer.startColor = rayColorDefaultState;
         lineRenderer.endColor = rayColorDefaultState;
-        lineRenderer.SetPosition(0, transform.position);
-        lineRenderer.SetPosition(1, new Vector3(transform.position.x,
-        transform.position.y, transform.position.z + rayDistance));
     }
 
-    void FixedUpdate()
+    void Update()
     {
         RaycastHit hit;
+        bool hitSomething = Physics.Raycast(transform.position, transform.forward, out hit, rayDistance, layersToInclude);
 
-        Vector3 rayCastDirection = transform.TransformDirection(Vector3.forward) * rayDistance;
-
-        if (Physics.Raycast(transform.position, rayCastDirection, out hit, Mathf.Infinity, layersToInclude))
+        if (hitSomething)
         {
-            Unselect();
-            lineRenderer.startColor = rayColorHoverState;
-            lineRenderer.endColor = rayColorHoverState;
-            var eyeInteractable = hit.transform.GetComponent<EyeInteractable>();
-            eyeInteractables.Add(eyeInteractable);
-            eyeInteractable.IsHovered = true;
+            var interactable = hit.collider.GetComponent<EyeInteractable>();
+            if (interactable != currentInteractable)
+            {
+                if (currentInteractable != null)
+                    currentInteractable.IsHovered = false;
+
+                currentInteractable = interactable;
+                if (currentInteractable != null)
+                    currentInteractable.IsHovered = true;
+
+                lineRenderer.startColor = rayColorHoverState;
+                lineRenderer.endColor = rayColorHoverState;
+            }
         }
         else
         {
+            if (currentInteractable != null)
+            {
+                currentInteractable.IsHovered = false;
+                currentInteractable = null;
+            }
+
             lineRenderer.startColor = rayColorDefaultState;
             lineRenderer.endColor = rayColorDefaultState;
-            Unselect(true);
-        }
-
-    }
-
-    void Unselect(bool clear = false)
-    {
-        foreach (var interactable in eyeInteractables)
-        {
-            interactable.IsHovered = false;
-        }
-        if (clear)
-        {
-            eyeInteractables.Clear();
         }
     }
-
 }

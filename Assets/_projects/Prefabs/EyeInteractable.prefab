@@ -149,5 +149,5 @@ MonoBehaviour:
   OnObjectHover:
     m_PersistentCalls:
       m_Calls: []
-  OnHoverActiveMaterial: {fileID: 2100000, guid: 275b2c99765ede142919b05d8a0a22b0, type: 2}
-  OnHoverInactiveMaterial: {fileID: 2100000, guid: b40c172f3bf2e754ba937f81a100a40e, type: 2}
+  OnHoverActiveMaterial: {fileID: 2100000, guid: 49b00ee46c5392846bbbc236c515acf0, type: 2}
+  OnHoverInactiveMaterial: {fileID: 2100000, guid: fadf4ab759020d549bdc810492267a97, type: 2}

@@ -6,7 +6,21 @@ using UnityEngine.Events;
 
 public class EyeInteractable : MonoBehaviour
 {
-    public bool IsHovered { get; set; }
+    private bool isHovered;
+    public bool IsHovered
+    {
+        get { return isHovered; }
+        set
+        {
+            if (isHovered != value)
+            {
+                isHovered = value;
+                UpdateMaterial();
+                if (isHovered)
+                    OnObjectHover?.Invoke(gameObject);
+            }
+        }
+    }
 
     [SerializeField]
     private UnityEvent<GameObject> OnObjectHover;
@@ -18,20 +32,11 @@ public class EyeInteractable : MonoBehaviour
     private Material OnHoverInactiveMaterial;
 
     private MeshRenderer meshRenderer;
-
-
+    
     void Start() => meshRenderer = GetComponent<MeshRenderer>();
 
-    void Update()
+    private void UpdateMaterial()
     {
-        if (IsHovered)
-        {
-            meshRenderer.material = OnHoverActiveMaterial;
-            OnObjectHover?.Invoke(gameObject);
-        }
-        else
-        {
-            meshRenderer.material = OnHoverInactiveMaterial;
-        }
+        meshRenderer.material = isHovered ? OnHoverActiveMaterial : OnHoverInactiveMaterial;
     }
 }
